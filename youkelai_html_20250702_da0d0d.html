@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有客来 - 叉车维修员资料管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2a5298);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header {
+            background: linear-gradient(to right, #0052cc, #0066ff);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo i {
+            font-size: 3.5rem;
+            margin-right: 25px;
+            color: #ffcc00;
+            background: rgba(0, 0, 0, 0.15);
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.6rem;
+            opacity: 0.95;
+            margin-top: 15px;
+            font-weight: 300;
+            max-width: 800px;
+            margin: 20px auto 0;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .highlight {
+            background: linear-gradient(to right, #ffcc00, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 40px;
+        }
+        
+        .qrcode-section {
+            flex: 1;
+            min-width: 320px;
+            padding: 20px;
+            text-align: center;
+            animation: slideInLeft 1s ease-out;
+        }
+        
+        .info-section {
+            flex: 1.5;
+            min-width: 320px;
+            padding: 20px;
+            animation: slideInRight 1s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .section-title {
+            color: #0052cc;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 5px;
+            background: linear-gradient(to right, #0052cc, #00aaff);
+            border-radius: 3px;
+        }
+        
+        .section-title i {
+            background: #e6f0ff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: #0052cc;
+            font-size: 1.5rem;
+        }
+        
+        .qrcode-container {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 82, 204, 0.25);
+            display: inline-block;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .qrcode-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(to right, #0052cc, #00aaff);
+        }
+        
+        #qrcode {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 30px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .qr-text {
+            margin-bottom: 30px;
+            font-size: 1.3rem;
+            color: #555;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+        
+        .instructions {
+            text-align: left;
+            margin: 35px 0;
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #0066ff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .instructions h3 {
+            color: #0052cc;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .instructions h3 i {
+            background: #e6f0ff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0052cc;
+        }
+        
+        .instructions ol {
+            padding-left: 30px;
+        }
+        
+        .instructions li {
+            margin-bottom: 18px;
+            line-height: 1.7;
+            font-size: 1.15rem;
+            color: #444;
+            font-weight: 500;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: transform 0.4s;
+            border-top: 4px solid #0066ff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #0052cc, #00aaff);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0, 102, 255, 0.2);
+        }
+        
+        .feature-card i {
+            font-size: 3rem;
+            color: #0066ff;
+            margin-bottom: 25px;
+        }
+        
+        .feature-card h3 {
+            color: #0052cc;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .feature-card p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, #ffaa00, #ff9900);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin: 20px 15px;
+            box-shadow: 0 6px 15px rgba(255, 170, 0, 0.4);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.6s;
+            z-index: -1;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn i {
+            margin-right: 12px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 170, 0, 0.5);
+        }
+        
+        .btn-download {
+            background: linear-gradient(to right, #0066ff, #005ce6);
+            box-shadow: 0 6px 15px rgba(0, 102, 255, 0.4);
+        }
+        
+        .btn-download:hover {
+            box-shadow: 0 10px 20px rgba(0, 102, 255, 0.5);
+        }
+        
+        .btn-open {
+            background: linear-gradient(to right, #00cc66, #00b359);
+            box-shadow: 0 6px 15px rgba(0, 204, 102, 0.4);
+        }
+        
+        .btn-open:hover {
+            box-shadow: 0 10px 20px rgba(0, 204, 102, 0.5);
+        }
+        
+        .statistics {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 50px 0;
+            padding: 40px;
+            background: linear-gradient(to right, #0052cc, #0066ff);
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 82, 204, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .statistics::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="0,0 100,0 100,100" fill="rgba(255,255,255,0.05)" /></svg>');
+            background-size: cover;
+        }
+        
+        .stat-item {
+            padding: 25px;
+            min-width: 220px;
+            z-index: 1;
+        }
+        
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+        
+        .stat-label {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+        
+        .new-feature {
+            background: linear-gradient(to right, #ff4d4f, #e04547);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 15px;
+            vertical-align: middle;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        footer p {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #666;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .contact-item i {
+            color: #0066ff;
+            font-size: 1.3rem;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .qrcode-section, .info-section {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .statistics {
+                flex-direction: column;
+            }
+            
+            .stat-item {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 500px) {
+            header {
+                padding: 30px 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .feature-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-tools"></i>
+                <h1>有客来</h1>
+            </div>
+            <p class="subtitle">叉车维修员专业资料管理系统 - <span class="highlight">扫码立即注册</span></p>
+        </header>
+        
+        <div class="content">
+            <div class="qrcode-section">
+                <div class="section-title">
+                    <i class="fas fa-qrcode"></i>
+                    <h2>扫码使用系统</h2>
+                </div>
+                
+                <div class="qrcode-container">
+                    <div id="qrcode"></div>
+                    <p class="qr-text">
+                        手机扫描二维码<br>立即访问"有客来"系统
+                    </p>
+                    
+                    <a href="#" class="btn btn-download" id="downloadQR">
+                        <i class="fas fa-download"></i> 下载二维码
+                    </a>
+                    <a href="#" class="btn btn-open" id="openSystem">
+                        <i class="fas fa-external-link-alt"></i> 直接访问系统
+                    </a>
+                </div>
+                
+                <div class="instructions">
+                    <h3><i class="fas fa-mobile-alt"></i> 使用说明：</h3>
+                    <ol>
+                        <li>打开手机微信或浏览器扫一扫功能</li>
+                        <li>对准上方二维码进行扫描</li>
+                        <li>在手机浏览器中打开链接</li>
+                        <li>填写并提交您的专业资料</li>
+                        <li>系统会自动保存您的信息</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    <h2>系统介绍</h2>
+                </div>
+                
+                <p style="font-size: 1.2rem; line-height: 1.8; color: #444; margin-bottom: 30px; background: #f8f9ff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                    "有客来"是专为叉车维修员设计的专业资料管理系统，帮助您高效整理和展示维修经验、专业技能和服务范围。<strong>最新版本已添加手机和邮箱必填功能</strong>，确保客户能及时联系到您！
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-user-edit"></i>
+                        <h3>专业资料管理</h3>
+                        <p>系统化整理您的专业信息，包括维修经验、技能特长和服务区域，打造专业形象。</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-brands"></i>
+                        <h3>品牌车型记录</h3>
+                        <p>详细记录您维修过的叉车品牌及车型，展示您的专业领域和技能范围。</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-phone-alt"></i>
+                        <h3>联系方式 <span class="new-feature">新增</span></h3>
+                        <p>新增手机和邮箱必填功能，确保客户能及时联系到您，不错过任何商机。</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h3>服务区域管理</h3>
+                        <p>明确标注您的服务区域，让客户了解您的可服务范围，提高接单效率。</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>移动端优化</h3>
+                        <p>专为移动设备优化，在任何手机上都能流畅使用，随时随地更新资料。</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>数据安全保障</h3>
+                        <p>采用先进加密技术保护您的个人信息，确保数据安全可靠。</p>
+                    </div>
+                </div>
+                
+                <div class="statistics">
+                    <div class="stat-item">
+                        <div class="stat-number">2,587</div>
+                        <div class="stat-label">注册维修员</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">99%</div>
+                        <div class="stat-label">用户满意度</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">全天候可用</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>有客来 &copy; 2023 叉车维修员资料管理系统 | 专业服务，值得信赖</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>客服热线: 400-888-7777</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>邮箱: support@youkelai.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>北京市朝阳区科技园88号</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // 生成二维码
+        document.addEventListener('DOMContentLoaded', function() {
+            // 这里应该是您部署后的实际URL
+            const systemUrl = 'https://example.com/forklift-system';
+            
+            // 生成二维码
+            const qrcode = new QRCode(document.getElementById("qrcode"), {
+                text: systemUrl,
+                width: 250,
+                height: 250,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            
+            // 直接访问系统按钮
+            document.getElementById('openSystem').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open(systemUrl, '_blank');
+            });
+            
+            // 下载二维码功能
+            document.getElementById('downloadQR').addEventListener('click', function(e) {
+                e.preventDefault();
+                const canvas = document.querySelector('#qrcode canvas');
+                const link = document.createElement('a');
+                link.download = '有客来-叉车维修系统二维码.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
